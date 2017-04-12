@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+ <xs:element name="VFPData">
+  <xs:complexType>
+   <xs:choice>
+    <xs:sequence>
+
+     <xs:element name="reportdata" maxOccurs="unbounded">
+      <xs:complexType>
+       <xs:attributeGroup ref="Common"/>
+       <xs:attributeGroup ref="ReportTemplate"/>
+       <xs:anyAttribute processContents="lax"/>
+      </xs:complexType>
+     </xs:element>
+    </xs:sequence>
+    <xs:sequence>
+    
+     <xs:element name="memberdata" maxOccurs="unbounded">
+      <xs:complexType>
+       <xs:attributeGroup ref="Common"/>
+       <xs:attributeGroup ref="PropertySheet"/>
+       <xs:anyAttribute processContents="lax"/>
+      </xs:complexType>
+     </xs:element>
+
+    </xs:sequence>
+   </xs:choice>
+  </xs:complexType>
+ </xs:element>
+ 
+ <xs:annotation>
+  <xs:documentation>
+  You can add extension attributes as required.
+  </xs:documentation>
+  <xs:documentation>
+Use the name and ref attributes of the Common attribute group to declare that certain rows "belong" to you.  Use the script attribute of the Common attribute group for design-time scripting.
+  </xs:documentation>
+   </xs:annotation>
+   
+ <xs:attributeGroup name="Common">
+  <xs:attribute name="name" type="xs:string" use="required"/>
+  <xs:attribute name="type" type="xs:string"/>
+  <xs:attribute name="script" type="xs:string"/>
+ </xs:attributeGroup>
+
+<xs:annotation>
+<xs:documentation>The ReportTemplate-specific execute attribute is script run at runtime (by Listeners) whereas the Common script attribute is potentially run by design-time tools. The declass and declasslib attributes will be looked for in the header record's template information, not individual DE-related object records. The class and classlib attributes in the header record are not used, can be leveraged for a custom helper class for report builders or listeners as desired.   Class and classlib attributes in layout objects are meant for use in run-time and/or design-time templating.  Whether you use these template classes to build custom rendering objects for runtime or to assign common style attributes at design-time, or both, is up to you. </xs:documentation>
+ </xs:annotation>
+
+ <xs:attributeGroup name="ReportTemplate">
+  <xs:attribute name="class" type="xs:string"/>
+  <xs:attribute name="classlib" type="xs:string"/>
+  <xs:attribute name="declass" type="xs:string"/>
+  <xs:attribute name="declasslib" type="xs:string"/>
+  <xs:attribute name="execute" type="xs:string"/>
+  <xs:attribute name="execwhen" type="xs:string"/>
+ </xs:attributeGroup>
+ 
+ 
+ <xs:attributeGroup name="PropertySheet">
+  <xs:attribute name="override" type="xs:boolean"/>
+  <xs:attribute name="display" type="xs:string"/>
+  <xs:attribute name="favorites" type="xs:boolean"/>
+ </xs:attributeGroup>
+
+</xs:schema>

@@ -1,0 +1,56 @@
+LPARAMETERS toFX, toListener, tcMethodToken,;
+   tP1, tP2, tP3, tP4, tP5, tP6,;
+   tP7, tP8, tP9, tP10, tP11, tP12
+
+*---------------------------------------------
+* MemberDataScripting Tips
+*
+* If you do not begin your script with
+* a PARAMETERS or LPARAMETERS statement,
+* the statement shown above will be added
+* during runtime execution.
+*
+* Parameters:
+* -----------
+* toFx          - a ref to the executing object
+* toListener    - a ref to the running ReportListener
+* tcMethodToken - an uppercase version of the 
+*                 executing event, e.g. "BEFOREREPORT"
+*
+* Additional parameters depend on the executing event.
+*
+* If you use your own parameter statement with more 
+* descriptive variable names, you must still include 
+* the full set of parameters (through tP12), even if 
+* you are limiting the events for which the script 
+* will be executed.
+*
+* ExecWhen:
+* --------------
+* You can use any of the following values in ExecWhen
+* to limit when this script is called. (Remove the 
+* quotation marks shown here):
+*
+*    -- a single (case-insensitive) method token, 
+*       such as "Render"
+*        
+*    -- an expression that will evaluate to a logical 
+*       value, such as "MyApplication.IncludeScript" 
+*       or "MyTable.MyLogicalField".
+*
+*    -- a "|"-delimited set of method tokens (case-
+*       insensitive), such as "|BeforeReport|AfterReport|"
+*
+* ExecWhen is evaluated dynamically.  
+*
+* You can even change the expression being evaluated in 
+* ExecWhen, or the script being executed, dynamically in 
+* the script itself. These two items are held in a 
+* read-write cursor (toFX.ScriptAlias) in the 
+* ReportListener's FRXDataSession.
+*
+* ExecWhen is evaluated in the ReportListener's 
+* CurrentDataSession, and script is executed within the 
+* CurrentDataSession unless you change the session within 
+* the script.
+*---------------------------------------------

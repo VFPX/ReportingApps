@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"  xmlns:VFP-RDL="http://schemas.microsoft.com/VisualFoxPro/Reports" elementFormDefault="unqualified" attributeFormDefault="unqualified"  version="RTM2.0">
+   <xs:element name="Reports">
+      <xs:annotation>
+         <xs:documentation>This schema describes the Visual FoxPro 9.0  XMLListener base delivery format.  As noted in various places, actual element and attribute NCNames are user-configurable at runtime, and the schema uses default names.
+As also noted, many elements of the schema are minOccurs=0.  In some cases these elements do not appear at all depending on the configuration of the report run or the XMLListener-specific properties for that report run. Examples: a SUMMARY report does not have detail bands, and if XMLListener.IncludeFormattingInLayoutObjects is .F. no formatting attributes appear.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="VFP-Report" maxOccurs="unbounded"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFP-Report">
+      <xs:annotation>
+         <xs:documentation>Contents of VFP-Report element are determined by XMLListener.XMLMode property.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="VFP-RDL" minOccurs="0"/>
+            <xs:element ref="Data" minOccurs="0"/>
+            <xs:element ref="Run" minOccurs="0"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="Run">
+      <xs:annotation>
+         <xs:documentation>Allows runtime data-dependent document attributes, such as contents of report variables or other accumulated data elements that do not occur in the layout itself, to be added at the conclusion of a report run.
+    Content type is set at xs:any deliberately to allow extensions such as cursor-shaped XML for rows, etc.
+   </xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:sequence maxOccurs="unbounded">
+            <xs:element name="property" type="VFP-Property"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="Data">
+      <xs:annotation>
+         <xs:documentation>Contents and structure of Data element are determined by XMLListener.includeBreaksInData property.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:choice>
+            <xs:group ref="IntegratedFormattingBands"/>
+          <!--  <xs:group ref="SeparateFormattingBands"/>  -->
+         </xs:choice>
+      </xs:complexType>
+   </xs:element>
+  <!-- <xs:group name="SeparateFormattingBands" >
+      <xs:sequence>
+         <xs:element name="Title" type="Band" minOccurs="0" />
+         <xs:choice>
+         <xs:group ref="GroupedBands" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:group ref="DetailBandSet" minOccurs="0" maxOccurs="unbounded"/>         
+         </xs:choice>
+         <xs:element name="Summary" type="Band" minOccurs="0"/>
+         <xs:element name="Pages">
+            <xs:complexType>
+               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="PH" type="FormattingBand" minOccurs="0"/>
+                  <xs:element name="PF" type="FormattingBand" minOccurs="0"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+         <xs:element name="Columns">
+            <xs:complexType>
+               <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                  <xs:element name="CH" type="FormattingBand" minOccurs="0"/>
+                  <xs:element name="CF" type="FormattingBand" minOccurs="0"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+      </xs:sequence>
+   </xs:group> -->
+   <xs:group name="GroupedBands">
+      <xs:sequence>
+         <xs:element name="GH" type="Band"/>
+         <xs:group ref="DetailBandSet" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:element name="GF" type="Band"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:group name="DetailBandSet">
+      <xs:sequence>
+         <xs:element name="DH" type="Band" minOccurs="0"/>
+         <xs:element name="D" type="Band" minOccurs="0"/>
+         <xs:element name="DF" type="Band" minOccurs="0"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:group name="IntegratedFormattingBands">
+      <xs:sequence>
+         <xs:element name="Title" type="Band" minOccurs="0"/>
+         <xs:group ref="FormattedPageBandSeries" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:element name="Summary" type="Band" minOccurs="0"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:group name="FormattedPageBandSeries">
+      <xs:sequence>
+         <xs:element name="PH" type="FormattingBand" minOccurs="0"/>
+         <xs:element name="CH" type="FormattingBand" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:choice>
+            <xs:group ref="GroupedBands" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:group ref="DetailBandSet" minOccurs="0" maxOccurs="unbounded"/>
+         </xs:choice>
+         <xs:element name="CF" type="FormattingBand" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:element name="PF" type="FormattingBand" minOccurs="0"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:complexType name="Band">
+      <xs:annotation>
+         <xs:documentation>All bands are inherently minOccurs="0" unless XMLListener.includeBandsWithNoObjects is .T.
+Band id and idref attributes are configurable via associated XMLListener properties.  Throughout schema, default attribute names are shown.  </xs:documentation>
+         <xs:documentation>All band nodenames are configurable, with defaults shown in the schema; see annotation for VFPFRXLayoutNode name attribute.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+         <xs:group ref="LayoutObjects"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required">
+         <xs:annotation>
+            <xs:documentation>Indicates FRXRecno for associated FRX metadata in VFP-RDL, with concatenated "+" if this band has been continued.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="idref" type="xs:positiveInteger" use="required">
+         <xs:annotation>
+            <xs:documentation>Indicates the associated page number, for non-formatting bands.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <!-- restriction by pattern here? -->
+   </xs:complexType>
+   <xs:group name="LayoutObjects">
+      <xs:choice>
+         <xs:element name="T" type="LayoutObjectNoContinuation"/>
+         <xs:element name="P" type="LayoutObjectImage"/>
+         <xs:element name="S" type="LayoutObject"/>
+         <xs:element name="E" type="LayoutObjectDynamicAttributes"/>
+         <xs:element name="L" type="LayoutObject"/>
+      </xs:choice>
+   </xs:group>
+   <xs:complexType name="FormattingBand">
+      <xs:sequence minOccurs="0" maxOccurs="unbounded">
+         <xs:group ref="LayoutObjects"/>
+      </xs:sequence>
+      <xs:attribute name="idref" type="xs:positiveInteger" use="required">
+         <xs:annotation>
+            <xs:documentation>Indicates the FRXRecno for associated metadata, for formatting bands.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="id" type="xs:positiveInteger" use="required">
+         <xs:annotation>
+            <xs:documentation>Indicates the associated page number, for formatting bands.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+   </xs:complexType>
+   <xs:complexType name="LayoutObject">
+      <xs:annotation>
+         <xs:documentation>All layout objects' nodenames are configurable, with defaults shown in the schema; see annotation for VFPFRXLayoutNode name attribute. Availability of layout objects' formatting attributes is determined by XMLListener.IncludeFormattingInLayoutObjects property.  All attribute names, both formatting and non-formatting, are also configurable via  XMLListener associated properties.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleContent>
+         <xs:extension base="xs:string">
+            <xs:attribute name="id" type="xs:string" use="required">
+               <xs:annotation>
+                  <xs:documentation>Indicates FRXRecno for associated FRX metadata in VFP-RDL, with concatenated "+" if this object has been continued from a previous page.</xs:documentation>
+               </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="c" type="xs:byte" default="0"/>
+            <xs:attribute name="l" type="xs:integer"/>
+            <xs:attribute name="t" type="xs:integer"/>
+            <xs:attribute name="w" type="xs:positiveInteger"/>
+            <xs:attribute name="h" type="xs:positiveInteger"/>
+            <xs:anyAttribute processContents="lax"/>
+         </xs:extension>
+      </xs:simpleContent>
+   </xs:complexType>
+   <xs:complexType name="LayoutObjectDynamicAttributes">
+      <xs:simpleContent>
+         <xs:restriction base="LayoutObject">
+            <xs:attributeGroup ref="DynamicTextAttributes"/>
+         </xs:restriction>
+      </xs:simpleContent>
+   </xs:complexType>
+   <xs:complexType name="LayoutObjectImage">
+      <xs:simpleContent>
+         <xs:restriction base="LayoutObjectNoContinuation">
+            <xs:attribute name="img" type="xs:string">
+               <xs:annotation>
+                  <xs:documentation>Supplies generated filename if this XML is generated by HTMLListener subclass and the image comes from a non-filebased image type (general field or image control).</xs:documentation>
+               </xs:annotation>
+            </xs:attribute>
+            <xs:anyAttribute processContents="lax"/> 
+         </xs:restriction>
+      </xs:simpleContent>
+   </xs:complexType>
+   <xs:complexType name="LayoutObjectNoContinuation">
+      <xs:simpleContent>
+         <xs:restriction base="LayoutObject">
+		  <xs:attribute name="c" type="xs:byte" fixed="0"/>
+			<xs:anyAttribute processContents="lax"/> 
+         </xs:restriction>
+      </xs:simpleContent>
+   </xs:complexType>
+   <xs:attributeGroup name="DynamicTextAttributes">
+      <xs:attribute name="FSIZE" type="xs:integer" use="optional"/>
+      <xs:attribute name="FSTYLE" type="xs:integer" use="optional"/>
+      <xs:attribute name="FNAME" type="xs:string" use="optional"/>
+      <xs:attribute name="FR" type="xs:integer" use="optional"/>
+      <xs:attribute name="FB" type="xs:integer" use="optional"/>
+      <xs:attribute name="FG" type="xs:integer" use="optional"/>
+      <xs:attribute name="FA" type="xs:integer" use="optional"/>
+      <xs:attribute name="PR" type="xs:integer" use="optional"/>
+      <xs:attribute name="PB" type="xs:integer" use="optional"/>
+      <xs:attribute name="PG" type="xs:integer" use="optional"/>
+      <xs:attribute name="PA" type="xs:integer" use="optional"/>
+      <xs:attribute name="DTYPE" type="xs:string" use="optional"/>
+      <xs:attribute name="FTEXT" type="xs:string" use="optional"/>
+	  <xs:anyAttribute processContents="lax"/> 
+   </xs:attributeGroup>
+   <xs:element name="VFP-RDL">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="VFPDataSet"/>
+         </xs:sequence>
+         <xs:attribute name="id" type="xs:string" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFPDataSet">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="VFPFRXLayoutObject" maxOccurs="unbounded"/>
+            <xs:element ref="VFPFRXLayoutNode" maxOccurs="unbounded"/>
+            <xs:element ref="VFPDataSource" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element ref="VFPFRXCommand"/>
+            <xs:element ref="VFPFRXPrintJob"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFPDataSource">
+      <xs:annotation>
+         <xs:documentation>The set of VFPDataSource elements represents a snapshot of the  FRX's CurrentDataSession, similar to a FoxPro View file in XML format.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="the_alias"/>
+            <xs:element name="rpt_driver"/>
+            <xs:element name="the_dbf"/>
+            <xs:element name="the_order"/>
+            <xs:element name="order_desc"/>
+            <xs:element name="the_filter"/>
+            <xs:element name="the_skip"/>
+            <xs:element ref="flds" maxOccurs="unbounded"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFPFRXCommand">
+      <xs:annotation>
+         <xs:documentation>Base attributes are determined by the member properties of the XMLListener.CommandClauses object.  Additional user-defined attributes are permitted. </xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="ASCII" type="xs:boolean" use="required"/>
+         <xs:attribute name="DE_NAME" type="xs:string" use="required"/>
+         <xs:attribute name="ENVIRONMENT" type="xs:boolean" use="required"/>
+         <xs:attribute name="FILE" type="xs:string" use="required"/>
+         <xs:attribute name="HEADING" type="xs:string" use="required"/>
+         <xs:attribute name="INSCREEN" type="xs:boolean" use="required"/>
+         <xs:attribute name="INWINDOW" type="xs:string" use="required"/>
+         <xs:attribute name="ISDESIGNERLOADED" type="xs:boolean" use="required"/>
+         <xs:attribute name="ISREPORT" type="xs:boolean" use="required"/>
+         <xs:attribute name="NOCONSOLE" type="xs:boolean" use="required"/>
+         <xs:attribute name="NODIALOG" type="xs:boolean" use="required"/>
+         <xs:attribute name="NOEJECT" type="xs:boolean" use="required"/>
+         <xs:attribute name="NOPAGEEJECT" type="xs:boolean" use="required"/>
+         <xs:attribute name="NORESET" type="xs:boolean" use="required"/>
+         <xs:attribute name="NOWAIT" type="xs:boolean" use="required"/>
+         <xs:attribute name="OFF" type="xs:boolean" use="required"/>
+         <xs:attribute name="OUTPUTTO" type="xs:byte" use="required"/>
+         <xs:attribute name="PDSETUP" type="xs:boolean" use="required"/>
+         <xs:attribute name="PLAIN" type="xs:boolean" use="required"/>
+         <xs:attribute name="PREVIEW" type="xs:boolean" use="required"/>
+         <xs:attribute name="PROMPT" type="xs:boolean" use="required"/>
+         <xs:attribute name="RANGEFROM" type="xs:boolean" use="required"/>
+         <xs:attribute name="RANGETO" type="xs:integer" use="required"/>
+         <xs:attribute name="RECORDTOTAL" type="xs:integer" use="required"/>
+         <xs:attribute name="SAMPLE" type="xs:boolean" use="required"/>
+         <xs:attribute name="SUMMARY" type="xs:boolean" use="required"/>
+         <xs:attribute name="TOFILE" type="xs:string" use="required"/>
+         <xs:attribute name="TOFILEADDITIVE" type="xs:boolean" use="required"/>
+         <xs:attribute name="WINDOW" type="xs:string" use="required"/>
+         <xs:anyAttribute processContents="lax"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFPFRXLayoutNode">
+      <xs:annotation>
+         <xs:documentation>Provides metadata specific to XMLListener's base XML format.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="name">
+               <xs:annotation>
+                  <xs:documentation>Indicates the current nodename as defined in the XMLListener's configuration table, for elements, or as an XMLListener property, for attributes.  Names used for layout objects and band types in the Data portion of this schema represent only the default values for these nodenames; for readability and localization purposes these nodenames are configurable and should be looked up from the VFPFRXLayoutNode portion of the VFP-RDL at runtime.</xs:documentation>
+               </xs:annotation>
+            </xs:element>
+            <xs:element name="type">
+               <xs:annotation>
+                  <xs:documentation>Matches FRX.objtype for this nodename</xs:documentation>
+               </xs:annotation>
+            </xs:element>
+            <xs:element name="code">
+               <xs:annotation>
+                  <xs:documentation>Matches FRX.objcode for this nodename</xs:documentation>
+               </xs:annotation>
+            </xs:element>
+            <xs:element name="info">
+               <xs:annotation>
+                  <xs:documentation>Description of this type of node from XMLListener's configuration table (for elements) or a matching XMLListener member property (for attributes).</xs:documentation>
+               </xs:annotation>
+            </xs:element>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="VFPFRXLayoutObject">
+      <xs:annotation>
+         <xs:documentation>Provides metadata specific to the FRX format, using FRX columns directly as well as derived columns from FRXCursor helper object and other sources.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="frxrecno"/>
+            <xs:element name="platform"/>
+            <xs:element name="name"/>
+            <xs:element name="expr"/>
+            <xs:element name="offset"/>
+            <xs:element name="vpos"/>
+            <xs:element name="hpos"/>
+            <xs:element name="height"/>
+            <xs:element name="objtype"/>
+            <xs:element name="tag"/>
+            <xs:element name="tag2"/>
+            <xs:element name="pensize"/>
+            <xs:element name="penpat"/>
+            <xs:element name="fillpat"/>
+            <xs:element name="width"/>
+            <xs:element name="style"/>
+            <xs:element name="picture"/>
+            <xs:element name="order"/>
+            <xs:element name="comment"/>
+            <xs:element name="fillchar"/>
+            <xs:element name="penred"/>
+            <xs:element name="pengreen"/>
+            <xs:element name="penblue"/>
+            <xs:element name="fillred"/>
+            <xs:element name="fillgreen"/>
+            <xs:element name="fillblue"/>
+            <xs:element name="fontface"/>
+            <xs:element name="fontstyle"/>
+            <xs:element name="fontsize"/>
+            <xs:element name="mode"/>
+            <xs:element name="float"/>
+            <xs:element name="stretch"/>
+            <xs:element name="stretchtop"/>
+            <xs:element name="fontbold"/>
+            <xs:element name="fontitalic"/>
+            <xs:element name="fontunderline"/>
+            <xs:element name="fontstrikethrough"/>
+            <xs:element name="unpathedimg"/>
+            <xs:element name="pathedimg"/>
+            <xs:element name="top"/>
+            <xs:element name="bottom"/>
+            <xs:element name="norepeat"/>
+            <xs:element name="pagebreak"/>
+            <xs:element name="colbreak"/>
+            <xs:element name="resetpage"/>
+            <xs:element name="general"/>
+            <xs:element name="spacing"/>
+            <xs:element name="swapheader"/>
+            <xs:element name="swapfooter"/>
+            <xs:element name="ejectbefor"/>
+            <xs:element name="ejectafter"/>
+            <xs:element name="totaltype"/>
+            <xs:element name="resettotal"/>
+            <xs:element name="fontcharset"/>
+            <xs:element name="supalways"/>
+            <xs:element name="supovflow"/>
+            <xs:element name="suprpcol"/>
+            <xs:element name="supgroup"/>
+            <xs:element name="supvalchng"/>
+            <xs:element name="supexpr"/>
+            <xs:element name="user"/>
+            <xs:element name="bandid" minOccurs="0"/>
+            <xs:element name="bandtype" minOccurs="0"/>
+            <xs:element name="bandlabel" minOccurs="0"/>
+            <xs:element name="start" minOccurs="0"/>
+            <xs:element name="stop" minOccurs="0"/>
+            <xs:element name="band_seq" minOccurs="0"/>
+            <xs:element name="rel_band_id" minOccurs="0"/>
+            <xs:element name="objid" minOccurs="0"/>
+            <xs:element name="objname" minOccurs="0"/>
+            <xs:element name="locale_id" minOccurs="0"/>
+            <xs:element name="start_band_id" minOccurs="0"/>
+            <xs:element name="band_offset" minOccurs="0"/>
+            <xs:element name="end_band_id" minOccurs="0"/>
+            <xs:element name="bandstretch" minOccurs="0"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:complexType name="VFP-Property" mixed="true">
+      <xs:sequence>
+         <xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:string" use="required"/>
+      <xs:anyAttribute processContents="lax"/>
+   </xs:complexType>
+   <xs:element name="VFPFRXPrintJob">
+      <xs:annotation>
+         <xs:documentation>Provides information specific to this report execution run as available in the VFP environment.  These elements determine formatting coordinates for instances of the layout objects as the Report Engine calculates their placement during the report run.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="pagewidth" type="xs:short" use="required"/>
+         <xs:attribute name="pageheight" type="xs:short" use="required"/>
+         <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+               <xs:documentation>Provided by XMLListener.PrintJobName.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="pagedesign" type="xs:string" use="required"/>
+         <xs:attribute name="printresolution" type="xs:short" use="required"/>
+         <xs:anyAttribute processContents="lax"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="flds">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="the_alias">
+               <xs:annotation>
+                  <xs:documentation>Repeated on the field level for use with SET FIELDS GLOBAL.</xs:documentation>
+               </xs:annotation>
+            </xs:element>
+            <xs:element name="the_field"/>
+            <xs:element ref="the_type"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="the_type">
+      <xs:annotation>
+         <xs:documentation>Derived from AFIELDS(), matches VFP codes for various table-based datatypes.</xs:documentation>
+      </xs:annotation>
+      <xs:simpleType>
+         <xs:restriction base="xs:string">
+            <xs:enumeration value="C"/>
+            <xs:enumeration value="Y"/>
+            <xs:enumeration value="D"/>
+            <xs:enumeration value="T"/>
+            <xs:enumeration value="B"/>
+            <xs:enumeration value="F"/>
+            <xs:enumeration value="G"/>
+            <xs:enumeration value="I"/>
+            <xs:enumeration value="L"/>
+            <xs:enumeration value="M"/>
+            <xs:enumeration value="N"/>
+            <xs:enumeration value="Q"/>
+            <xs:enumeration value="V"/>
+            <xs:enumeration value="W"/>
+         </xs:restriction>
+      </xs:simpleType>
+   </xs:element>
+</xs:schema>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:VFP-RDL="http://schemas.microsoft.com/VisualFoxPro/Reports" elementFormDefault="unqualified" attributeFormDefault="unqualified" version="SP2.0">
+   <xs:include schemaLocation="XmlOutput-Includes.xsd"/>
+   <xs:element name="Reports">
+      <xs:annotation>
+         <xs:documentation>This schema describes the Visual FoxPro 9.0 XMLListener base delivery format.  As noted in various places, actual element and attribute NCNames are user-configurable at runtime, and the schema uses default names.
+As also noted, many elements of the schema are minOccurs=0.  In some cases these elements do not appear at all depending on the configuration of the report run or the XMLListener-specific properties for that report run. Examples: a SUMMARY report does not have detail bands, and if XMLListener.IncludeFormattingInLayoutObjects is .F. no formatting attributes appear.
+There is an alternative form of this schema that shares all elements of this schema except for the separation of formatting band collections from data bands.  Both schema forms are supported by the VFP 9.0 XMLListener, 
+as determined by its IncludeBreaksInData property.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="VFP-Report" type="VFP-ReportIntegratedFormatting" maxOccurs="unbounded"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:complexType name="VFP-ReportIntegratedFormatting">
+      <xs:annotation>
+         <xs:documentation>Contents of VFP-Report element (VFP-RDL, Data, or both) are determined by XMLListener.XMLMode property.
+			                  The optional Run element inclusion is new in SP1.</xs:documentation>
+      </xs:annotation>
+      <xs:sequence>
+         <xs:element ref="VFP-RDL" minOccurs="0"/>
+         <xs:element name="Data" type="DataIntegratedFormatting" minOccurs="0"/>
+         <xs:element ref="Run" minOccurs="0"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:complexType name="DataIntegratedFormatting">
+      <xs:sequence>
+         <xs:element name="Title" type="Band" minOccurs="0"/>
+         <xs:group ref="FormattedPageBandSeries" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:element name="Summary" type="Band" minOccurs="0"/>
+      </xs:sequence>
+   </xs:complexType>
+   <xs:group name="FormattedPageBandSeries">
+      <xs:sequence>
+         <xs:element name="PH" type="FormattingBand" minOccurs="0"/>
+         <xs:element name="CH" type="FormattingBand" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:choice>
+            <xs:group ref="GroupedBands" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:group ref="DetailBandSet" minOccurs="0" maxOccurs="unbounded"/>
+         </xs:choice>
+         <xs:element name="CF" type="FormattingBand" minOccurs="0" maxOccurs="unbounded"/>
+         <xs:element name="PF" type="FormattingBand" minOccurs="0"/>
+      </xs:sequence>
+   </xs:group>
+</xs:schema>

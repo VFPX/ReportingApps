@@ -12,6 +12,9 @@ Includes the full source code for the following applications:
 **2022.04.12 Release**
 This release fixes a bug in ReportBuilder.app that sometimes causes the data group combobox to contain duplicate items (thanks to Martina Jindrova).
 
+**2021.08.31 Release**
+This release fixes a bug in ReportPreview.app that creates the canvas twice (thanks to Christof Wollenhaupt).
+
 **2014.07.04 Release**  
 This release fixes a bug in ReportOutput.app and ReportBuilder.app that didn't handle higher DPI displays properly (thanks to Joel Leach).
 

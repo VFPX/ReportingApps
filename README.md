@@ -9,6 +9,9 @@ Includes the full source code for the following applications:
 
 * ReportPreview.APP
 
+**2022.08.15 Release**
+This release allows the expression in the Print When of a group of objects to have a maximum length of 250 rather than 50 (thanks to creacionesintegrales).
+
 **2022.04.12 Release**
 This release fixes a bug in ReportBuilder.app that sometimes causes the data group combobox to contain duplicate items (thanks to Martina Jindrova).
 

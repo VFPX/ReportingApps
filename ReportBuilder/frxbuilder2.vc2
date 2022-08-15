@@ -3504,6 +3504,7 @@ DEFINE CLASS panelmultiprop AS container
 		*p: propertycursor
 	*</DefinedPropArrayMethod>
 
+	Anchor = 15
 	BackStyle = 0
 	BorderWidth = 0
 	event = .NULL.
@@ -3647,7 +3648,7 @@ DEFINE CLASS panelmultiprop AS container
 		create cursor (m.cAlias) ( ;
 			PROP_ENABLE  l, ;
 			PROP_NAME	 c(50), ;
-			PROP_VALUE   c(50), ;
+			PROP_VALUE   c(250), ;
 			PROP_TYPE	 i, ;
 			PROP_ID      i )
 		

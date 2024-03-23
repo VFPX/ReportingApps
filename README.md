@@ -9,6 +9,9 @@ Includes the full source code for the following applications:
 
 * ReportPreview.APP
 
+**2024.03.23 Release**
+This release fixes issue #8, a bug in HTML output (thanks to Martina Jindrova).
+
 **2022.08.15 Release**
 This release allows the expression in the Print When of a group of objects to have a maximum length of 250 rather than 50 (thanks to creacionesintegrales).
 
